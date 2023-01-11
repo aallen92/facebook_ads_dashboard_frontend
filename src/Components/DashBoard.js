@@ -235,7 +235,7 @@ export default function DashBoard() {
 											<img
 												className="h-8 w-8 rounded-full"
 												src={picture}
-												alt="picture"
+												alt=""
 											/>
 										</Menu.Button>
 									</div>
