@@ -1,55 +1,84 @@
 import { useState } from "react";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaFacebook } from "react-icons/fa";
+import { useBetween } from "use-between";
+import { useShareableState } from "../Context/Session";
 
-const FacebookAuth = () => {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [data, setData] = useState({});
+const useSharedState = () => useBetween(useShareableState);
+
+export const FacebookAuth = () => {
+	// const [isLoggedIn, setIsLoggedIn] = useState(false);
+	// const [data, setData] = useState({});
+	const { isLoggedIn, setIsLoggedIn, data, setData } = useSharedState();
 	const [picture, setPicture] = useState("");
-	const appId = "497447772520584";
+	const appId = "1372202453543125";
 
 	const responseFacebook = (response) => {
 		console.log(response);
+		if (response.status === "unknown") {
+			alert("Login failed!");
+			setIsLoggedIn(false);
+			return false;
+		}
 		setData(response);
 		setPicture(response.picture.data.url);
-		if (response.accessToken) {
-			setIsLoggedIn(true);
-		} else {
-			setIsLoggedIn(false);
-		}
+		// if (response.accessToken) {
+		// 	setIsLoggedIn(true);
+		// } else {
+		// 	setIsLoggedIn(false);
+		// }
 	};
+
+	const logout = () => {
+		setIsLoggedIn(false);
+		setData({});
+		setPicture("");
+	};
+
 	return (
 		<div className="container">
 			{!isLoggedIn && (
-				// <FacebookLogin
-				// 	appId="497447772520584"
-				// 	autoLoad={false}
-				// 	fields="name,email,picture"
-				// 	scope="public_profile,user_friends,email"
-				// 	callback={responseFacebook}
-				// 	className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-				// />
 				<FacebookLogin
+					onSuccess={(response) => {
+						console.log("Login Success!", response);
+						if (response.accessToken) {
+							setIsLoggedIn(true);
+						} else {
+							setIsLoggedIn(false);
+						}
+					}}
+					onFail={(error) => {
+						console.log("Login Failed!", error);
+					}}
+					onProfileSuccess={(response) => {
+						console.log("Get Profile Success!", response.picture.data.url);
+						responseFacebook(response);
+					}}
 					appId={appId}
 					children={
-						<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-between items-center w-">
+						<div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-between items-center ">
 							<FaFacebook /> <span className="px-2">Login with Facebook</span>
-						</button>
+						</div>
 					}
 				/>
 			)}
-			{/* {isLoggedIn && <Image src={picture} roundedCircle />} */}
 
-			{/* {isLoggedIn &&
-      <Card.Body>
-        <Card.Title>{data.name}</Card.Title>
-        <Card.Text>
-          {data.email}
-        </Card.Text>
-      </Card.Body>
-    } */}
+			{isLoggedIn && (
+				<div className="card ">
+					<div className="card-body flex justify-between items-center w-full">
+						<img className="rounded" src={picture} alt="Profile" />
+						<h5 className="card-title">{data.name}</h5>
+						<p className="card-text">Email ID: {data.email}</p>
+						<button
+							href="#"
+							className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  "
+							onClick={logout}
+						>
+							Logout
+						</button>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
-
-export default FacebookAuth;
