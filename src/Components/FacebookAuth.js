@@ -7,10 +7,9 @@ import { useShareableState } from "../Context/Session";
 const useSharedState = () => useBetween(useShareableState);
 
 export const FacebookAuth = () => {
-	// const [isLoggedIn, setIsLoggedIn] = useState(false);
-	// const [data, setData] = useState({});
-	const { isLoggedIn, setIsLoggedIn, data, setData } = useSharedState();
-	const [picture, setPicture] = useState("");
+	const { isLoggedIn, setIsLoggedIn, data, setData, picture, setPicture } =
+		useSharedState();
+
 	const appId = "1372202453543125";
 
 	const responseFacebook = (response) => {
@@ -22,11 +21,6 @@ export const FacebookAuth = () => {
 		}
 		setData(response);
 		setPicture(response.picture.data.url);
-		// if (response.accessToken) {
-		// 	setIsLoggedIn(true);
-		// } else {
-		// 	setIsLoggedIn(false);
-		// }
 	};
 
 	const logout = () => {
@@ -36,7 +30,7 @@ export const FacebookAuth = () => {
 	};
 
 	return (
-		<div className="container">
+		<div className="flex justify-center items-center h-[100vh]">
 			{!isLoggedIn && (
 				<FacebookLogin
 					onSuccess={(response) => {
