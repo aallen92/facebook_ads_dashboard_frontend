@@ -1,4 +1,3 @@
-import { useState } from "react";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaFacebook } from "react-icons/fa";
 import { useBetween } from "use-between";
@@ -29,23 +28,25 @@ export const FacebookAuth = () => {
 		setPicture("");
 	};
 
+	const loginSuccess = (response) => {
+		console.log("Login Success!", response);
+		if (response.accessToken) {
+			setIsLoggedIn(true);
+		} else {
+			setIsLoggedIn(false);
+		}
+	};
+
 	return (
 		<div className="flex justify-center items-center h-[100vh]">
 			{!isLoggedIn && (
 				<FacebookLogin
-					onSuccess={(response) => {
-						console.log("Login Success!", response);
-						if (response.accessToken) {
-							setIsLoggedIn(true);
-						} else {
-							setIsLoggedIn(false);
-						}
-					}}
+					onSuccess={loginSuccess}
 					onFail={(error) => {
 						console.log("Login Failed!", error);
 					}}
 					onProfileSuccess={(response) => {
-						console.log("Get Profile Success!", response.picture.data.url);
+						console.log("Get Profile Success!");
 						responseFacebook(response);
 					}}
 					appId={appId}
